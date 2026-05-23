@@ -614,10 +614,10 @@
                             .setFont('Arial', 11, 'bold')
                             .setVerticalJustification(Annotation.VerticalJustify.ABOVE);
                         
-                        // Whole notes ('w') have no stems, so VexFlow places their annotations lower (closer to string 1).
-                        // We apply a Y-shift of -30px to align them to the same horizontal level as notes with stems.
+                        // Whole notes ('w') have no stems, which places their annotations lower.
+                        // We set their text line higher to align them to the same horizontal level.
                         if (item.duration === 'w') {
-                            annotation.setYShift(-30);
+                            annotation.setTextLine(2.5);
                         }
                         
                         sn.addModifier(annotation, targetIndex);
@@ -631,6 +631,18 @@
                     const voice = new Voice({ num_beats: 4, beat_value: 4 });
                     voice.addTickables(staveNotes);
                     new Formatter().joinVoices([voice]).format([voice], width - (col === 0 ? 80 : 20));
+                    
+                    // Post-formatting alignment: Shift whole-note annotations vertically to match stem-note level
+                    staveNotes.forEach(sn => {
+                        if (sn.duration === 'w' && sn.modifiers) {
+                            sn.modifiers.forEach(mod => {
+                                if (mod instanceof Annotation) {
+                                    mod.setYShift(-32);
+                                }
+                            });
+                        }
+                    });
+                    
                     voice.draw(context, stave);
                 } catch (err) {
                     console.error('Error drawing measure ' + i + ':', err);
@@ -774,7 +786,7 @@
 
         function scheduleMetronome() {
             if (!metronomeActive) return;
-            ensureAudioCtx();
+            getOrCreateAudioCtx();
 
             const lookAhead = 0.12; // seconds
             const scheduleInterval = 60; // ms
@@ -831,7 +843,7 @@
 
         function startMetronome() {
             if (metronomeActive) return;
-            ensureAudioCtx();
+            getOrCreateAudioCtx();
             metronomeActive = true;
             metronomeBeatCount = 0;
             metronomeNextBeatTime = audioCtx.currentTime + 0.05;
