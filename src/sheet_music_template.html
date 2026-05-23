@@ -634,10 +634,14 @@
                     
                     // Post-formatting alignment: Shift whole-note annotations vertically to match stem-note level
                     staveNotes.forEach(sn => {
-                        if (sn.duration === 'w' && sn.modifiers) {
+                        const dur = sn.duration || (typeof sn.getDuration === 'function' ? sn.getDuration() : '');
+                        if (dur === 'w' && sn.modifiers) {
                             sn.modifiers.forEach(mod => {
-                                if (mod instanceof Annotation) {
-                                    mod.setYShift(-32);
+                                if (typeof mod.setYShift === 'function') {
+                                    mod.setYShift(-35); // Shift up by 35px to align with stem notes
+                                } else {
+                                    mod.y_shift = -35;
+                                    mod.yShift = -35;
                                 }
                             });
                         }
