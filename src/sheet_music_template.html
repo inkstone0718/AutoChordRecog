@@ -614,6 +614,12 @@
                             .setFont('Arial', 11, 'bold')
                             .setVerticalJustification(Annotation.VerticalJustify.ABOVE);
                         
+                        // Whole notes ('w') have no stems, so VexFlow places their annotations lower (closer to string 1).
+                        // We apply a Y-shift of -30px to align them to the same horizontal level as notes with stems.
+                        if (item.duration === 'w') {
+                            annotation.setYShift(-30);
+                        }
+                        
                         sn.addModifier(annotation, targetIndex);
                     }
 
