@@ -615,12 +615,14 @@
                         
                         const annotation = new Annotation(item.chord)
                             .setFont('Arial', 11, 'bold')
+                            .setJustification(Annotation.Justify.CENTER)
                             .setVerticalJustification(Annotation.VerticalJustify.ABOVE);
                         
-                        // Whole notes ('w') have no stems, so VexFlow defaults their modifier position inside the stave.
-                        // We apply a manual Y shift to move the annotation above the top string.
+                        // Whole notes ('w') are horizontally centered in VexFlow, but VexFlow does not update
+                        // the X coordinate of their modifiers. We shift them horizontally to align them with the centered chord.
                         if (item.duration === 'w') {
-                            annotation.setYShift(-20);
+                            const xShift = (width - (col === 0 ? 80 : 20)) / 2;
+                            annotation.setXShift(xShift);
                         }
                         
                         sn.addModifier(annotation, targetIndex);
