@@ -1,0 +1,18 @@
+# Virtual environment
+.venv/
+env/
+venv/
+ENV/
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# User recording files (optional, but good to ignore temporary recordings)
+# my_recording.wav
