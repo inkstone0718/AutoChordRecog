@@ -600,11 +600,20 @@
                     const sn = new TabNote(opts);
 
                     if (!item.isRest && item.chord && item.chord !== 'N') {
+                        // Find the index of the highest string (minimum string number) to draw the annotation above the stave
+                        let targetIndex = 0;
+                        let minStr = 999;
+                        for (let idx = 0; idx < item.positions.length; idx++) {
+                            if (item.positions[idx].str < minStr) {
+                                minStr = item.positions[idx].str;
+                                targetIndex = idx;
+                            }
+                        }
                         sn.addModifier(
                             new Annotation(item.chord)
                                 .setFont('Arial', 11, 'bold')
                                 .setVerticalJustification(Annotation.VerticalJustify.ABOVE),
-                            0
+                            targetIndex
                         );
                     }
 

@@ -92,6 +92,20 @@ def quantize_timeline_to_measures(timeline):
             if timeline:
                 chord_found = timeline[-1][2]
         beat_chords.append(chord_found)
+
+    # Align the first non-silence chord to start at the second bar (beat index 4)
+    first_non_n_idx = -1
+    for idx, chord in enumerate(beat_chords):
+        if chord != 'N':
+            first_non_n_idx = idx
+            break
+
+    if first_non_n_idx != -1:
+        # Keep only from the first non-'N' chord, and prepend exactly 4 'N's (one full bar)
+        beat_chords = ['N', 'N', 'N', 'N'] + beat_chords[first_non_n_idx:]
+    else:
+        # If all chords are 'N', just make it a single empty bar
+        beat_chords = ['N', 'N', 'N', 'N']
         
     measures = []
     for i in range(0, len(beat_chords), 4):
