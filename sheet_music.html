@@ -594,10 +594,12 @@
                 stave.setContext(context).draw();
 
                 const staveNotes = measure.map(item => {
-                    const opts = { 
-                        positions: item.isRest ? [] : item.positions, 
-                        duration: item.duration 
-                    };
+                    // For rests, we must keep positions to provide Y coordinates (preventing NoYValues error)
+                    // but we clear the fret values to prevent drawing the fret number '0'.
+                    const positions = item.isRest 
+                        ? item.positions.map(p => ({ str: p.str, fret: '' })) 
+                        : item.positions;
+                    const opts = { positions: positions, duration: item.duration };
                     if (item.isRest) opts.type = 'r';
 
                     const sn = new TabNote(opts);
@@ -615,7 +617,6 @@
                         
                         const annotation = new Annotation(item.chord)
                             .setFont('Arial', 11, 'bold')
-                            .setJustification(Annotation.Justify.CENTER)
                             .setVerticalJustification(Annotation.VerticalJustify.ABOVE);
                         
                         // Whole notes ('w') are horizontally centered in VexFlow, but VexFlow does not update
