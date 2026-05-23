@@ -594,7 +594,10 @@
                 stave.setContext(context).draw();
 
                 const staveNotes = measure.map(item => {
-                    const opts = { positions: item.positions, duration: item.duration };
+                    const opts = { 
+                        positions: item.isRest ? [] : item.positions, 
+                        duration: item.duration 
+                    };
                     if (item.isRest) opts.type = 'r';
 
                     const sn = new TabNote(opts);
@@ -609,12 +612,18 @@
                                 targetIndex = idx;
                             }
                         }
-                        sn.addModifier(
-                            new Annotation(item.chord)
-                                .setFont('Arial', 11, 'bold')
-                                .setVerticalJustification(Annotation.VerticalJustify.ABOVE),
-                            targetIndex
-                        );
+                        
+                        const annotation = new Annotation(item.chord)
+                            .setFont('Arial', 11, 'bold')
+                            .setVerticalJustification(Annotation.VerticalJustify.ABOVE);
+                        
+                        // Whole notes ('w') have no stems, so VexFlow defaults their modifier position inside the stave.
+                        // We apply a manual Y shift to move the annotation above the top string.
+                        if (item.duration === 'w') {
+                            annotation.setYShift(-20);
+                        }
+                        
+                        sn.addModifier(annotation, targetIndex);
                     }
 
                     sn.setStave(stave);
